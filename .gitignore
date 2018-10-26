@@ -1,0 +1,10 @@
+# pyinstaller
+*.spec
+build
+dist
+
+# python
+__pycache__
+
+# me
+explore
