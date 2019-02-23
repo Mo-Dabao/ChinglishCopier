@@ -2,9 +2,10 @@
 *.spec
 build
 dist
+make.cmd
 
 # python
 __pycache__
 
 # me
-explore
+__explore
