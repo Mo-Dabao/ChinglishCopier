@@ -1,8 +1,5 @@
 # pyinstaller
-*.spec
-build
-dist
-make.cmd
+__pyinstaller
 
 # python
 __pycache__

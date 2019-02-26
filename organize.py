@@ -16,14 +16,24 @@
 # 可能出现在换行符前的字符
 ENDSIGN = set(".:;!?。：；！？")
 
-# unicode65281～65374中可能要保留的全角标点
-FULLPUNCTUATION = set("，。：；！？～")
+# 半角标点（除了.）
+HALFPUNCTUATION = set(",:;!?")
 
-# 可能出现在半角空格和标点前的字符
-HALFSIGN = set("abcdefghijklmnopqrstuvwxyz"
-               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-               "0123456789"
-               ",.:;!?\"')]}")
+# 可能出现在半角空格前的字符
+SPACESIGN = set("abcdefghijklmnopqrstuvwxyz"
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                ",.:;!?\"')]}")
+
+# 可能出现在半角标点前的字符
+HALFPUNCTUATIONSIGN = set("abcdefghijklmnopqrstuvwxyz"
+                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                          "0123456789\"')]}")
+
+# unicode65281～65374中可能要保留的全角标点
+FULLPUNCTUATION = set("，。：；！？")
+
+# 数字
+NUMBER = set("0123456789")
 
 
 def organize(text_old):
@@ -49,17 +59,23 @@ def organize(text_old):
             # 若上一个字符为可能出现在换行符前的字符则保留
             if text_new and text_new[-1] in ENDSIGN:
                 text_new.append(char)
+            # 若上一个字符为可能出现在半角空格前的字符则换成半角空格
+            elif text_new and text_new[-1] in SPACESIGN:
+                text_new.append(' ')
         # 处理非换行符的空白字符
         elif char.isspace():
             # 若上一个字符为可能出现在半角空格前的字符则换成半角空格
-            if text_new and text_new[-1] in HALFSIGN:
+            if text_new and text_new[-1] in SPACESIGN:
                 text_new.append(' ')
         # 处理unicode65281～65374全角字符
         elif 65281 <= char_unicode <= 65374:
+            # 确定要保留的全角字符串
+            if char == "～":
+                text_new.append(char)
             # 若为中文全角标点
-            if char in FULLPUNCTUATION:
+            elif char in FULLPUNCTUATION:
                 # 若上一个字符为可能出现在半角标点前的字符则换成半角并加空格
-                if text_new and text_new[-1] in HALFSIGN:
+                if text_new and text_new[-1] in HALFPUNCTUATIONSIGN:
                     text_new.append(chr(char_unicode - 65248))
                     text_new.append(' ')
                 # 否则保留
@@ -68,17 +84,24 @@ def organize(text_old):
             # 否则换成半角
             else:
                 text_new.append(chr(char_unicode - 65248))
-        # 处理剩余全角字符均保留
-        elif char not in HALFSIGN:
+        # 正常英文字符
+        elif char in HALFPUNCTUATIONSIGN:
+            text_new.append(char)
+        # 半角标点
+        elif char in HALFPUNCTUATION:
+            if text_new and text_new[-1] not in HALFPUNCTUATIONSIGN:
+                text_new.append(chr(char_unicode + 65248))
+            else:
+                text_new.append(char)
+                text_new.append(' ')
+        # 处理剩余字符
+        else:
             # 若上一个字符是半角空格则删去空格
             if text_new and text_new[-1] == ' ':
                 del text_new[-1]
                 # 若上一个字符是半角标点则换成全角
-                if text_new[-1] in ",:;?!":
-                    text_new[-1] = chr(ord(text_new[-2]) + 65248)
-            text_new.append(char)
-        # 处理剩余字符直接保留
-        else:
+                if text_new[-1] in HALFPUNCTUATION:
+                    text_new[-1] = chr(ord(text_new[-1]) + 65248)
             text_new.append(char)
     text_new = ''.join(text_new)
     return text_new
