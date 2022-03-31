@@ -2,7 +2,7 @@
 
 用tkinter搭建的一个用于复制中英文文献文本内容的小程序。
 
-用Pyinstaller打包的可执行程序（[百度网盘链接](https://pan.baidu.com/s/1Nt9PepIC1i4ZgGT6kwrrdg)）。
+用Pyinstaller打包的可执行程序（[百度网盘链接](https://pan.baidu.com/s/1srRgb2zAqavrzp9wnCtjbw)）。
 
 ---
 
